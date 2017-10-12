@@ -1,4 +1,4 @@
-{% set version = '2.3' %}
+{% set version = '2.6' %}
 
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
@@ -12,38 +12,55 @@ source:
   url:
     - https://cran.r-project.org/src/contrib/hunspell_{{ version }}.tar.gz
     - https://cran.r-project.org/src/contrib/Archive/hunspell/hunspell_{{ version }}.tar.gz
-  sha256: 52de433bf928cebff282518626379416798682e2d88f46855b2260f792d2f2e9
+  sha256: 78ba41924f8021241f43efbd2befbd72a79ebbbd9bc3a4a0794fb09af468e70b
+
+
+  # patches:
+   # List any patch files here
+   # - fix.patch
 
 build:
+  # If this is a new build for the same version, increment the build number.
   number: 0
-  skip: true  # [win32]
 
+  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
 
+# Suggests: testthat, devtools, pdftools, janeaustenr, wordcloud2, knitr, rmarkdown
 requirements:
   build:
     - r-base
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
     - r-rcpp
     - r-digest
-    - posix                # [win]
-    - {{native}}toolchain  # [win]
-    - gcc                  # [not win]
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-rcpp
     - r-digest
 
 test:
   commands:
-    - $R -e "library('hunspell')"  # [not win]
+    # You can put additional test commands to be run here.
+    - $R -e "library('hunspell')"           # [not win]
     - "\"%R%\" -e \"library('hunspell')\""  # [win]
 
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
 about:
-  home: https://github.com/ropensci/hunspell#readme
-  license: GPL-2
+  home: https://github.com/ropensci/hunspell#readme (devel) https://hunspell.github.io (upstream)
+  license: GPL-2 | LGPL-2.1 | MPL-1.1
   summary: A spell checker and morphological analyzer library designed for languages with rich
     morphology and complex word compounding or character encoding. The package can check
     and analyze individual words as well as search for incorrect words within a text,
@@ -55,3 +72,30 @@ extra:
   recipe-maintainers:
     - johanneskoester
     - bgruening
+    - mingwandroid
+
+# The original CRAN metadata for this package was:
+
+# Package: hunspell
+# Type: Package
+# Title: High-Performance Stemmer, Tokenizer, and Spell Checker for R
+# Version: 2.6
+# Author: Jeroen Ooms
+# Maintainer: Jeroen Ooms <jeroen@berkeley.edu>
+# Description: A spell checker and morphological analyzer library designed for languages with rich morphology and complex word compounding or character encoding. The package can check and analyze individual words as well as search for incorrect words within a text, latex, html or xml document. Use the 'devtools' package to spell check R documentation with 'hunspell'.
+# License: GPL-2 | LGPL-2.1 | MPL-1.1
+# URL: https://github.com/ropensci/hunspell#readme (devel) https://hunspell.github.io (upstream)
+# BugReports: https://github.com/ropensci/hunspell/issues
+# Imports: Rcpp, digest
+# LinkingTo: Rcpp
+# Suggests: testthat, devtools, pdftools, janeaustenr, wordcloud2, knitr, rmarkdown
+# VignetteBuilder: knitr
+# RoxygenNote: 6.0.1
+# NeedsCompilation: yes
+# Packaged: 2017-06-27 19:53:00 UTC; jeroen
+# Repository: CRAN
+# Date/Publication: 2017-06-28 06:20:07 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
