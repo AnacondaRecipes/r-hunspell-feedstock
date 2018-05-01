@@ -14,16 +14,10 @@ source:
     - {{ cran_mirror }}/src/contrib/Archive/hunspell/hunspell_{{ version }}.tar.gz
   sha256: 33e6fa939f3458d151cce1855c6743e850dd736f111ca29668de1a4d48312880
 
-
-  # patches:
-   # List any patch files here
-   # - fix.patch
-
 build:
   merge_build_host: True  # [win]
   # If this is a new build for the same version, increment the build number.
   number: 0
-
 
   # This is required to make R link correctly on Linux.
   rpaths:
